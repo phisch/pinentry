@@ -1,0 +1,9 @@
+[package]
+name = "pinentry"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gio = "0.19.8"
+gtk4 = "0.8.2"
+gtk4-layer-shell = "0.3.0"
