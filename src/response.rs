@@ -1,26 +1,26 @@
+use std::fmt::{Display, Formatter};
+
+use crate::error::AssuanError;
+
 #[derive(Debug, PartialEq)]
 pub enum Response {
     Ok(Option<String>),
-    Error(i32, Option<String>),
-    //Info(String, String),
-    //Comment(String),
+    Error(AssuanError),
     Data(String),
-    //Inquire(String),
 }
 
-impl ToString for Response {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for Response {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        let string = match self {
             Response::Ok(data) => match data {
                 Some(data) => format!("OK {}", data),
                 None => "OK".to_string(),
             },
-            Response::Error(code, data) => match data {
-                Some(data) => format!("ERR {} {}", code, data),
-                None => format!("ERR {}", code),
-            },
+            Response::Error(error) => error.to_string(),
             Response::Data(data) => format!("D {}", data),
-        }
+        };
+
+        write!(f, "{}", string)
     }
 }
 
@@ -36,10 +36,9 @@ mod tests {
 
     #[test]
     fn error_response_converts_to_string() {
-        assert_eq!(Response::Error(1, None).to_string(), "ERR 1");
         assert_eq!(
-            Response::Error(1, Some("foo".to_string())).to_string(),
-            "ERR 1 foo"
+            Response::Error(AssuanError::UnknownIPCCommand).to_string(),
+            "ERR 536871187 Unknown IPC command <User defined source 1>"
         );
     }
 
